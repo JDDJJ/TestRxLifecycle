@@ -12,6 +12,8 @@ import android.widget.Button;
 
 import com.example.hoomsun.testrxlife.BaseActivity;
 import com.example.hoomsun.testrxlife.R;
+import com.example.hoomsun.testrxlife.contract.Contract;
+import com.example.hoomsun.testrxlife.presenter.PresenterImpl;
 import com.trello.rxlifecycle2.RxLifecycle;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid;
@@ -42,7 +44,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class RxJavaTestActivity extends BaseActivity {
+public class RxJavaTestActivity extends BaseActivity implements Contract.View {
 
 
     @BindView(R.id.button2)
@@ -74,9 +76,9 @@ public class RxJavaTestActivity extends BaseActivity {
 
     @Override
     protected void doBusiness(Context mContext) {
-        for (i = 0; i < 20; i++) {
-            initObservableToObserver();
-        }
+        PresenterImpl presenter = new PresenterImpl(this);
+        presenter.attachView(this);
+        presenter.doBiz();
     }
 
 
@@ -249,16 +251,9 @@ public class RxJavaTestActivity extends BaseActivity {
             }
         };
         stringObservable
-                .delay(10, TimeUnit.SECONDS)
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        Log.e("---", "dispose");
-                    }
-                })
-                .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new ProgressObserver<String>(new SoftReference(this)) {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -363,4 +358,5 @@ public class RxJavaTestActivity extends BaseActivity {
             d1.dispose();
         }
     }
+
 }
