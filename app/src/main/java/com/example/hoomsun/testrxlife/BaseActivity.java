@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by hoomsun on 2017/4/7.
@@ -32,6 +33,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
      * 是否允许全屏
      **/
     private boolean isFullScreen = false;
+    private Unbinder unbinder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,16 +49,18 @@ public abstract class BaseActivity extends RxAppCompatActivity {
             mContextView = LayoutInflater.from(this).inflate(bindLayout(), null);
         }
         setContentView(mContextView);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this, mContextView);
         initView(mContextView);
         doBusiness(this);
     }
+
     /**
      * [绑定布局]
      *
      * @return
      */
     protected abstract int bindLayout();
+
     /**
      * [初始化控件]
      *
@@ -84,6 +89,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
     }
+
     /**
      * [是否允许全屏]
      *
@@ -101,6 +107,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     /**
      * 获取状态栏高度
+     *
      * @return
      */
     protected int getStatusBarHeight() {
@@ -110,5 +117,12 @@ public abstract class BaseActivity extends RxAppCompatActivity {
             result = getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (unbinder != null)
+            unbinder.unbind();
     }
 }

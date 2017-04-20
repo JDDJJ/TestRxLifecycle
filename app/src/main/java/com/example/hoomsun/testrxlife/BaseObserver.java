@@ -29,7 +29,7 @@ public class BaseObserver<T> implements Observer<T> {
 
     @Override
     public void onNext(T value) {
-
+        ToastUtil.showShortToast(BaseApp.getContext(),"data");
     }
 
     @Override

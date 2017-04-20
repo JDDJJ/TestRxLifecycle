@@ -254,7 +254,7 @@ public class RxJavaTestActivity extends BaseActivity implements Contract.View {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.<String>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new ProgressObserver<String>(new SoftReference(this)) {
+                .subscribe(new BaseObserver<String>(new SoftReference(this)) {
                     @Override
                     public void onSubscribe(Disposable d) {
                         super.onSubscribe(d);
